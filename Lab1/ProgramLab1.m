@@ -1,7 +1,5 @@
-% Zadanie 1. Zaleznośc stanu systemu od parametrow R i C
-
+%Illia Bannitsyn
 close all
-% ustawienie zmiennych globalnych wykorzystywanych w trakcie symulacji
 FinalVoltage = 0;
 InitialVoltage = 0;
 StepTime = 0; % czas po ktorym odbedzie sie skok na skokowym zrodle napiecia
@@ -23,9 +21,11 @@ WPCv = [4,6,8];
 tiledlayout(2,1);
 nexttile
 
-
+% Zadanie 1. Wplyw R i C na zachowanie sie ukladu
 %Gorny wykres
-K = 1/(R * Cv(1));
+R = Rv(1);
+WPC=WPCv(1);
+K = 1;
 a = sim('SimLinkLab1');
 plot(a.tout,a.u);
 hold on;
@@ -58,7 +58,8 @@ set(leg1,'Interpreter','latex');
 set(leg1,'FontSize',17);
 title('Stan systemu dla roznej pojemnosci');
 hold off 
-fprintf('Widac, ze im wieksa pojemnosc kondesatora, tym szybciej on sie rozladowywuje\n')
+fprintf('Zadanie 1.1\n');
+fprintf('Z wykresu mozna wywnioskoskowac ze, im wieksa pojemnosc kondesatora, tym szybciej on sie rozladowywuje\n')
 fprintf('Dowolny klawisz zeby kontynuowac ... \n')
 pause
 
@@ -138,6 +139,7 @@ pause
 
 % Zadanie 2. Analiza ukladu dla WPC = 0 i roznych wartosci stalego
 % sterowania
+fprintf('Zadanie 1.2\n');
 clf
 WPC = 0;
 values = 1:4;
@@ -151,6 +153,7 @@ ylabel('Napiecie na kondensatorze');
 plot(a.tout,a.x,colors(i));
 hold on
 plot(a.tout,a.u, colors(i));
+title('Wplyw sterowania na zachowanie sie ukladu')
 hold on
 end
 fprintf('Napiecie na kondensatorze nie moze byc wyzsze od napiecia sterowania\n');
@@ -161,7 +164,7 @@ pause;
 
 % Zadanie 3. Analiza zachowania ukladu dla stalego stereowania rownego 1 i
 % roznych wartosci poczatkowych
-
+fprintf('Zadanie 1.3\n');
 clf;
 InitialVoltage = 1;
 FinalVoltage = 1;
@@ -185,7 +188,8 @@ pause
 % Zadanie 4. Analiza dla roznych wartosci R i C, przy skoku nappiecia po 5
 % sekunzie
 clf;
-
+fprintf('Zadanie 1.4\n');
+%Parametry simulacji
 StepTime = 5;
 SimulationTime=10;
 InitialVoltage = 3;
@@ -193,54 +197,59 @@ FinalVoltage = 0;
 WPC = 0;
 tiledlayout(2,1);
 nexttile
+
 %rozpatrywane wartosci oporu
-Rv = [10,15];
+Rv = [10,10,5,1];
 %rozpatrywane wartosci pojemnosci
-Cv = [0.1,0.15];
+Cv = [0.1,0.15,0.1,0.1];
+
 
 %gorny wykres
-K = 1/ (Rv(1) * Cv(1));
+for i = 1:4
+K = 1/ (Rv(i) * Cv(i));
 a = sim('SimLinkLab1');
-plot(a.tout,a.x);
-grid
+xlabel('Czas');
+ylabel('Napiecie na kondensatorze');
+plot(a.tout,a.x,colors(i));
+grid;
+leg1 = legend('$C = 0.1 F\;R = 10\,\Omega\;$','$C=0.15F\; R = 10\,\Omega\;$','$C = 0.1F\; R = 5\,\Omega\;$','$C = 0.1 F\;R = 1\,\Omega\;$');
+set(leg1,'Interpreter','latex');
+set(leg1,'FontSize',17);
 hold on
-size(a.tout)
-size(a.x);
-plot(a.tout,a.u);
-
+hold on
+title('Wplyw R i C na zachowanie sie ukladu')
+end
 
 %dolny wykres
 nexttile
 K = 1/ (Rv(2) * Cv(2));
 a = sim('SimLinkLab1');
-plot(a.tout,a.x);
-hold on
 plot(a.tout,a.u);
 grid
-fprintf('');
+title('Wykres sygnalu sterowania')
+grid
+fprintf('Im mniejszy jest iloczyn R*C im szybciej kondensator traci napiecie\n');
 hold off
-
 pause
 
-% Zadanie 5. Podanie sygnalu o ksztalcie synusoidy
+% Zadanie 5. Sygnal o ksztalcie sinysoidy
 clf
-Rv = linspace(10,40,4);
-Cv = linspace(0.1,1,4);
+fprintf('Zadanie 1.5\n');
+
+Rv = [10,200];
+WPC=0;
+Cv = [0.1,0.15];
+
 RC = Rv .* Cv;
 SimulationTime = 10;
-for i= 1:4
+for i= 1:2
 K = 1/RC(i);
 set_param('SimLinkLab1/switch','sw','0');
 a = sim('SimLinkLab1');
 plot(a.tout,a.x);
+title('Wykres dla sinusoidy')
 hold on 
 end
-pause
+fprintf('Im wiekszy iloczyn R*C tym mniejsza amplituda napiecia na kondensatorze.\n Gdy Poczatkowe napiecie na kondensatorze nie jest rowne 0 wtedy kondensator sie rozladowywuje i potem okresowo zmienia swoje napiecie w zaleznosci od czestotliwosci zmian sinusoidy ');
 
-% Zadanie 6. Przykladowe rozwiazanie zadan z kolokwium 
-
-% Zadanie 1.4
-R = 10^6;
-C = 10^(-6);
-WPC = -1.72;
 
